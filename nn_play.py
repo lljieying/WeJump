@@ -38,7 +38,9 @@ def multi_scale_search(pivot, screen, range=0.3, num=10):
 class WechatAutoJump(object):
     def __init__(self, phone, sensitivity, serverURL, debug, resource_dir):
         self.phone = phone
+        # self.phone = 'Android'
         self.sensitivity = sensitivity
+        # self.sensitivity = 2.045
         self.debug = debug
         self.resource_dir = resource_dir
         self.step = 0
@@ -69,7 +71,8 @@ class WechatAutoJump(object):
 
         self.sess = tf.Session()
         self.sess.run(tf.global_variables_initializer())
-        all_vars = tf.all_variables()
+        # all_vars = tf.all_variables()
+        all_vars = tf.global_variables()
         var_coarse = [k for k in all_vars if k.name.startswith('coarse')]
         var_fine = [k for k in all_vars if k.name.startswith('fine')]
         self.saver_coarse = tf.train.Saver(var_coarse)
@@ -80,8 +83,9 @@ class WechatAutoJump(object):
 
     def get_current_state(self):
         if self.phone == 'Android':
-            os.system('adb shell screencap -p /sdcard/1.png')
-            os.system('adb pull /sdcard/1.png state.png')
+            os.system('C:\\projects\\Wechat_AutoJump\\adb\\adb.exe shell screencap -p /sdcard/1.png')
+            os.system('C:\\projects\\Wechat_AutoJump\\adb\\adb.exe pull /sdcard/1.png state.png')
+            print('=== shell and pull completed===') 
         elif self.phone == 'IOS':
             self.client.screenshot('state.png')
 
@@ -158,7 +162,7 @@ class WechatAutoJump(object):
         press_time = int(np.rint(press_time))
         press_h, press_w = int(0.82*self.resolution[0]), self.resolution[1]//2
         if self.phone == 'Android':
-            cmd = 'adb shell input swipe {} {} {} {} {}'.format(press_w, press_h, press_w, press_h, press_time)
+            cmd = 'C:\\projects\\Wechat_AutoJump\\adb\\adb.exe shell input swipe {} {} {} {} {}'.format(press_w, press_h, press_w, press_h, press_time)
             print(cmd)
             os.system(cmd)
         elif self.phone == 'IOS':
