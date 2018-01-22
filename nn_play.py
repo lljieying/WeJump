@@ -10,6 +10,7 @@ import argparse
 import tensorflow as tf
 from model import JumpModel
 from model_fine import JumpModelFine
+import uuid
 
 def multi_scale_search(pivot, screen, range=0.3, num=10):
     H, W = screen.shape[:2]
@@ -82,17 +83,18 @@ class WechatAutoJump(object):
         print('==== successfully restored ====')
 
     def get_current_state(self):
+        localfile = "state_{}.png".format(str(uuid.uuid4()))
         if self.phone == 'Android':
-            os.system('C:\\projects\\Wechat_AutoJump\\adb\\adb.exe shell screencap -p /sdcard/1.png')
-            os.system('C:\\projects\\Wechat_AutoJump\\adb\\adb.exe pull /sdcard/1.png state.png')
+            os.system("C:\\projects\\adb\\adb.exe shell screencap -p /sdcard/1.png")
+            os.system("C:\\projects\\adb\\adb.exe pull /sdcard/1.png " + localfile)
             print('=== shell and pull completed===') 
         elif self.phone == 'IOS':
-            self.client.screenshot('state.png')
+            self.client.screenshot(localfile)
 
         if self.debug:
-            shutil.copyfile('state.png', os.path.join(self.debug, 'state_{:03d}.png'.format(self.step)))
+            shutil.copyfile(localfile, os.path.join(self.debug, 'state_{:03d}.png'.format(self.step)))
 
-        state = cv2.imread('state.png')
+        state = cv2.imread(localfile)
         self.resolution = state.shape[:2]
         scale = state.shape[1] / 720.
         state = cv2.resize(state, (720, int(state.shape[0] / scale)), interpolation=cv2.INTER_NEAREST)
@@ -162,7 +164,7 @@ class WechatAutoJump(object):
         press_time = int(np.rint(press_time))
         press_h, press_w = int(0.82*self.resolution[0]), self.resolution[1]//2
         if self.phone == 'Android':
-            cmd = 'C:\\projects\\Wechat_AutoJump\\adb\\adb.exe shell input swipe {} {} {} {} {}'.format(press_w, press_h, press_w, press_h, press_time)
+            cmd = 'C:\\projects\\adb\\adb.exe shell input swipe {} {} {} {} {}'.format(press_w, press_h, press_w, press_h, press_time)
             print(cmd)
             os.system(cmd)
         elif self.phone == 'IOS':
