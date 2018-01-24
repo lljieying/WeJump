@@ -11,6 +11,7 @@ import tensorflow as tf
 from model import JumpModel
 from model_fine import JumpModelFine
 import uuid
+adb_path= "C:\\projects\\adb\\adb.exe"
 
 def multi_scale_search(pivot, screen, range=0.3, num=10):
     H, W = screen.shape[:2]
@@ -85,8 +86,8 @@ class WechatAutoJump(object):
     def get_current_state(self):
         localfile = "state_{}.png".format(str(uuid.uuid4()))
         if self.phone == 'Android':
-            os.system("C:\\projects\\adb\\adb.exe shell screencap -p /sdcard/1.png")
-            os.system("C:\\projects\\adb\\adb.exe pull /sdcard/1.png " + localfile)
+            os.system("{} shell screencap -p /sdcard/1.png".format(adb_path))
+            os.system("{} pull /sdcard/1.png {}".format(adb_path, localfile))
             print('=== shell and pull completed===') 
         elif self.phone == 'IOS':
             self.client.screenshot(localfile)
@@ -164,7 +165,7 @@ class WechatAutoJump(object):
         press_time = int(np.rint(press_time))
         press_h, press_w = int(0.82*self.resolution[0]), self.resolution[1]//2
         if self.phone == 'Android':
-            cmd = 'C:\\projects\\adb\\adb.exe shell input swipe {} {} {} {} {}'.format(press_w, press_h, press_w, press_h, press_time)
+            cmd = '{} shell input swipe {} {} {} {} {}'.format(adb_path,press_w, press_h, press_w, press_h, press_time)
             print(cmd)
             os.system(cmd)
         elif self.phone == 'IOS':
